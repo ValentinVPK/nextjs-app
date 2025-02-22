@@ -4,6 +4,12 @@ import MealsGrid from "@/components/meals/meals-grid";
 import { getMeals } from "@/lib/meals";
 import { Meal } from "@/types/meals";
 import { Suspense } from "react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Meals",
+  description: "This is a list of all shared meals.",
+};
 
 async function Meals() {
   const meals = (await getMeals()) as Meal[];

@@ -2,16 +2,36 @@ import Image from "next/image";
 import classes from "./page.module.css";
 import { getMeal } from "@/lib/meals";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<MealDetailPageParams>;
+}) {
+  const resolvedParams = await params;
+  const meal = getMeal(resolvedParams.mealSlug);
+
+  if (!meal) {
+    notFound();
+  }
+
+  return {
+    title: meal.title,
+    description: meal.summary,
+  };
+}
+
 type MealDetailPageParams = {
   mealSlug: string;
 };
 
-type MealDetailPageProps = {
-  params: MealDetailPageParams;
-};
-
-export default function MealDetailsPage({ params }: MealDetailPageProps) {
-  const meal = getMeal(params.mealSlug);
+export default async function MealDetailsPage({
+  params,
+}: {
+  params: Promise<MealDetailPageParams>;
+}) {
+  const resolvedParams = await params;
+  const meal = getMeal(resolvedParams.mealSlug);
 
   if (!meal) {
     notFound();
