@@ -1,16 +1,66 @@
+import Image from "next/image";
+import classes from "./page.module.css";
+import { getMeal } from "@/lib/meals";
+import { notFound } from "next/navigation";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<MealDetailPageParams>;
+}) {
+  const resolvedParams = await params;
+  const meal = getMeal(resolvedParams.mealSlug);
+
+  if (!meal) {
+    notFound();
+  }
+
+  return {
+    title: meal.title,
+    description: meal.summary,
+  };
+}
+
 type MealDetailPageParams = {
   mealSlug: string;
 };
 
-type MealDetailPageProps = {
-  params: MealDetailPageParams;
-};
+export default async function MealDetailsPage({
+  params,
+}: {
+  params: Promise<MealDetailPageParams>;
+}) {
+  const resolvedParams = await params;
+  const meal = getMeal(resolvedParams.mealSlug);
 
-export default function MealDetailsPage({ params }: MealDetailPageProps) {
+  if (!meal) {
+    notFound();
+  }
+
+  const instructions = meal.instructions.replace(/\n/g, "<br />");
+
   return (
-    <main>
-      <h1>Meal Detail Page</h1>
-      <p>{params.mealSlug}</p>
-    </main>
+    <>
+      <header className={classes.header}>
+        <div className={classes.image}>
+          <Image src={meal.image} alt={meal.title} fill />
+        </div>
+        <div className={classes.headerText}>
+          <h1>{meal.title}</h1>
+          <p className={classes.creator}>
+            by <a href={`mailto:${meal.creator_email}`}>{meal.creator}</a>
+          </p>
+          <p className={classes.summary}>{meal.summary}</p>
+        </div>
+      </header>
+      <main>
+        <p
+          className={classes.instructions}
+          dangerouslySetInnerHTML={{
+            __html: instructions,
+          }}
+        />
+      </main>
+    </>
   );
 }
